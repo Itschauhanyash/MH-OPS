@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hub System - Sorting & Bagging</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f4f4f6;
+      color: #1f2a44;
+      min-height: 100vh;
+    }
+
+    /* Login Page */
+    .login-container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    .login-header {
+      background: #2874f0;
+      color: white;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .login-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .flipkart-icon {
+      width: 40px;
+      height: 40px;
+      background: #ffc200;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #2874f0;
+      font-size: 20px;
+    }
+
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 16px;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .warning-box strong {
+      color: #dc3545;
+    }
+
+    .login-form-container {
+      background: white;
+      padding: 30px 24px;
+      border-radius: 0 0 4px 4px;
+    }
+
+    .login-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      position: relative;
+      padding: 0 20px;
+    }
+
+    .login-title::before,
+    .login-title::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 60px;
+      height: 1px;
+      background: #dfe3e8;
+    }
+
+    .login-title::before {
+      left: 0;
+    }
+
+    .login-title::after {
+      right: 0;
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2a44;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #dfe3e8;
+      border-radius: 4px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #2874f0;
+      box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.1);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover {
+      background: #1e5fc7;
+    }
+
+    .forgot-link {
+      text-align: center;
+      margin-top: 16px;
+      color: #2874f0;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .login-msg {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+
+    .login-msg.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .login-msg.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    /* Facility Selection */
+    .facility-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    .facility-card {
+      background: white;
+      padding: 24px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .facility-card h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .facility-select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #dfe3e8;
+      border-radius: 4px;
+      font-size: 15px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Navigation Drawer */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 998;
+      display: none;
+    }
+
+    .drawer-backdrop.show {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      background: white;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+      z-index: 999;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 16px;
+      border-bottom: 1px solid #dfe3e8;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drawer-header-icon {
+      width: 32px;
+      height: 32px;
+      background: #e7f1ff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .drawer-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .drawer-content {
+      padding: 16px;
+    }
+
+    .drawer-dropdown {
+      margin-bottom: 16px;
+    }
+
+    .drawer-dropdown label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .drawer-dropdown select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dfe3e8;
+      border-radius: 4px;
+      font-size: 14px;
+      background: white;
+    }
+
+    .drawer-menu-item {
+      padding: 14px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .drawer-menu-item:hover {
+      background: #f4f4f6;
+    }
+
+    .menu-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+    }
+
+    .menu-icon-box.tk { background: #87ceeb; }
+    .menu-icon-box.gc { background: #ffc200; }
+    .menu-icon-box.bg { background: #87ceeb; }
+    .menu-icon-box.irt { background: #87ceeb; }
+    .menu-icon-box.sb { background: #87ceeb; }
+    .menu-icon-box.ua { background: #87ceeb; }
+    .menu-icon-box.pl { background: #87ceeb; }
+
+    .menu-item-text {
+      flex: 1;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .drawer-divider {
+      height: 1px;
+      background: #dfe3e8;
+      margin: 16px 0;
+    }
+
+    .logout-item {
+      padding: 14px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      color: #2874f0;
+      font-weight: 600;
+    }
+
+    /* Main App Header */
+    .app-header {
+      background: #2874f0;
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hamburger-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+    }
+
+    .hamburger-btn span {
+      width: 20px;
+      height: 2px;
+      background: white;
+      display: block;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .header-right {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      background: white;
+      border-bottom: 1px solid #dfe3e8;
+      padding: 0 16px;
+    }
+
+    .tab {
+      padding: 14px 20px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+      color: #7b8190;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #2874f0;
+      border-bottom-color: #2874f0;
+    }
+
+    /* Content Area */
+    .content-area {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .station-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eef2f6;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #52616b;
+      margin-bottom: 16px;
+    }
+
+    .location-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .change-link {
+      color: #2874f0;
+      font-weight: 700;
+      margin-left: 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .scan-input {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #e7f1ff;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 16px;
+      outline: none;
+      background: white;
+    }
+
+    .scan-input:focus {
+      border-color: #2874f0;
+      box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.1);
+    }
+
+    /* Small scanned shipment text */
+    .scanned-small {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .status-box {
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-box.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .status-box.info {
+      background: #e7f1ff;
+      border: 1px solid #b3d9ff;
+      color: #004085;
+    }
+
+    .status-box.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .status-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #28a745;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .status-text {
+      flex: 1;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .status-details {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .bin-list {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .bin-list-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .bin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .bin-item {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Bagging Page */
+    .bag-info {
+      background: white;
+      border: 1px solid #dfe3e8;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .bag-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .bag-info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bag-info-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .bag-info-value {
+      font-weight: 700;
+      font-size: 16px;
+      color: #2874f0;
+    }
+
+    .bag-weight {
+      background: #ffe6e6;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .bag-weight-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #d32f2f;
+    }
+
+    /* Dynamic weight color states */
+    .bag-weight-value.weight-ok {
+      color: #28a745; /* green */
+    }
+
+    .bag-weight-value.weight-high {
+      color: #d32f2f; /* red */
+    }
+
+    /* Shipments remove list */
+    .shipments-list {
+      margin-top: 12px;
+      border: 1px solid #dfe3e8;
+      border-radius: 6px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .shipment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 6px;
+      border-bottom: 1px solid #f1f4f8;
+    }
+
+    .shipment-item:last-child { border-bottom: none; }
+
+    .delete-btn {
+      background: #fff;
+      color: #d32f2f;
+      border: 1px solid #f5c6cb;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .done-btn {
+      margin-top: 8px;
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .remove-error {
+      padding: 8px;
+      color: #b21f2d;
+      background: #fff3f3;
+      border: 1px solid #f5c6cb;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .remove-link {
+      color: #2874f0;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .illustration {
+      text-align: center;
+      padding: 20px;
+      background: #fff9e6;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .illustration-text {
+      margin-top: 12px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* Hidden class */
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .content-area {
+        padding: 12px;
+      }
+      
+      .app-header {
+        padding: 12px;
+      }
+      
+      .header-title {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Page -->
+  <div id="login-page" class="login-container">
+    <div class="login-header">
+      <div class="flipkart-icon">f</div>
+      <h1>Flipkart</h1>
+    </div>
+    <div class="warning-box">
+      Please do not share your password with anyone. Any user found sharing password with any one whatsoever case may be, <strong>strict disciplinary action including termination</strong> will be initiated against the defaulter.
+    </div>
+    <div class="login-form-container">
+      <h2 class="login-title">Login</h2>
+      <p class="login-subtitle">Enter LDAP credentials</p>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">User Name</label>
+          <input type="text" id="username" placeholder="User Name" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="submit-btn">Submit</button>
+        <div id="login-msg" class="login-msg"></div>
+        <a href="#" class="forgot-link">Forgot/Update password?</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Facility Selection Page -->
+  <div id="facility-page" class="facility-container hidden">
+    <div class="facility-card">
+      <h2>Select Facility</h2>
+      <div class="form-group">
+        <label for="facility-select">Facilities</label>
+        <select id="facility-select" class="facility-select">
+          <option value="">Please Select Facility</option>
+          <option value="MotherHub_STV_BTS">MotherHub_STV_BTS</option>
+          <option value="PrimaryCBS1">MotherHub_STV</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Drawer -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-header-icon">🏔️</div>
+      <h3>Hub System</h3>
+    </div>
+    <div class="drawer-content">
+      <div class="drawer-dropdown">
+        <label>Operations</label>
+        <select id="operations-select">
+          <option>Operations</option>
+        </select>
+      </div>
+      <div class="drawer-dropdown">
+        <label>Facility Selection</label>
+        <select id="facility-drawer-select">
+          <option>Please Select Facility</option>
+          <option>MotherHub_STV_BTS</option>
+          <option>MotherHub_STV</option>
+        </select>
+      </div>
+      <div class="drawer-menu-item" data-action="tracking">
+        <div class="menu-icon-box tk">TK</div>
+        <span class="menu-item-text">Tracking</span>
+        <span>▼</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="grocery">
+        <div class="menu-icon-box gc">GC</div>
+        <span class="menu-item-text">Grocery</span>
+        <span>▼</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="bagging">
+        <div class="menu-icon-box bg">BG</div>
+        <span class="menu-item-text">Bagging</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="irt">
+        <div class="menu-icon-box irt">IRT</div>
+        <span class="menu-item-text">IRT Area</span>
+        <span>▼</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="sorting-bagging">
+        <div class="menu-icon-box sb">SB</div>
+        <span class="menu-item-text">Sorting and Bagging</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="automation">
+        <div class="menu-icon-box ua">UA</div>
+        <span class="menu-item-text">Automation</span>
+      </div>
+      <div class="drawer-menu-item hidden-menu-item" data-action="3pl">
+        <div class="menu-icon-box pl">3PL</div>
+        <span class="menu-item-text">3pl handover</span>
+        <span>▼</span>
+      </div>
+      <div class="drawer-divider"></div>
+      <div class="logout-item" id="logout-btn">
+        <div class="drawer-header-icon">🏔️</div>
+        <span>Logout</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Blank Page with Navigation Bar -->
+  <div id="blank-page" class="hidden">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="hamburger-btn" id="menu-toggle-blank">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="header-title">Hub System</div>
+      </div>
+      <div class="header-right" id="blank-facility-id">ca.1234</div>
+    </div>
+    <div class="content-area" style="padding-top: 40px; text-align: center; color: #666;">
+      <p>Welcome to Hub System</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="main-app" class="hidden">
+    <div class="app-header">
+      <div class="header-left">
+        <button class="hamburger-btn" id="menu-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="header-title" id="page-title">Sorting</div>
+      </div>
+      <div class="header-right" id="facility-id">ca.1234</div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="sorting">Sorting</div>
+      <div class="tab" data-tab="bagging">Bagging</div>
+    </div>
+
+    <!-- Sorting Panel -->
+    <div id="sorting-panel" class="content-area">
+      <div class="form-group" id="process-selector" style="margin-bottom: 16px;">
+        <label for="process-select">Select Process</label>
+        <select id="process-select" class="scan-input" style="padding: 12px;">
+          <option value="">Select Primary or Secondary</option>
+          <option value="primary">Primary</option>
+          <option value="secondary">Secondary</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 12px;" id="station-display-container" class="hidden">
+        <div class="station-pill" id="station-display">
+          <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span id="current-station">PrimaryCBS1</span>
+        </div>
+        <a href="#" class="change-link" id="change-station">Change</a>
+      </div>
+
+      <input type="text" class="scan-input hidden" id="station-scan" placeholder="SCAN STATION...">
+
+      <div class="scan-with-id">
+        <input type="text" class="scan-input hidden" id="shipment-scan" placeholder="Scan Shipment...">
+        <!-- Display the last scanned shipment id for primary/secondary processes (fixed position below shipment input) -->
+        <div id="scanned-shipment-id" class="hidden" style="margin-top:8px;">
+          <div class="scanned-small" id="scanned-shipment-small" style="font-size:12px; color:#666;">&nbsp;</div>
+        </div>
+      </div>
+
+      <input type="text" class="scan-input hidden" id="bin-scan" placeholder="Scan Bin...">
+
+      <div id="sorting-status" class="status-box hidden"></div>
+
+      <div class="illustration">
+        <div style="font-size: 48px;">📦</div>
+        <div class="illustration-text" id="illustration-text">No cut-off at this station</div>
+      </div>
+    </div>
+
+    <!-- Bagging Panel -->
+    <div id="bagging-panel" class="content-area hidden">
+      <div class="bag-info hidden" id="bag-info-box">
+        <div class="bag-info-row">
+          <div class="bag-info-label">
+            <span>📦</span>
+            <span>No. of shipments in bag</span>
+          </div>
+          <div class="bag-info-value" id="bag-shipments">112</div>
+        </div>
+        <a href="#" class="remove-link">Remove Shipments</a>
+        <div class="bag-weight">
+          <div class="bag-info-label">
+            <span>📦</span>
+            <span>Total Bag Weight</span>
+          </div>
+          <div class="bag-weight-value" id="bag-weight">91.9 Kg</div>
+        </div>
+        <!-- Shipments list for removal -->
+        <div id="bag-shipments-list" class="shipments-list hidden"></div>
+      </div>
+
+      <input type="text" class="scan-input" id="bag-bin-scan" placeholder="SCAN STATION/BIN ID...">
+      <input type="text" class="scan-input hidden" id="bag-seal-scan" placeholder="Scan Seal ID...">
+
+      <div class="illustration">
+        <div style="font-size: 48px;">🏷️</div>
+        <div class="illustration-text">Scan seal ID to close bag and print label</div>
+      </div>
+
+      <div id="bagging-status" class="status-box hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let currentPage = 'login';
+    let currentStation = 'PrimaryCBS1';
+    let currentProcess = 'primary';
+    let stationScanned = false;
+    let selectedFacility = '';
+    let expectedBin = null;
+    let lastWrongBin = null;
+    // Remember last shipment that produced a mapping error so rescanning it clears the error
+    let lastMappingErrorShipment = null;
+    // Count shipments scanned for the current station/process — used to show mapping error on every 3rd shipment
+    let shipmentCount = 0;
+
+    // DOM Elements
+    const loginPage = document.getElementById('login-page');
+    const facilityPage = document.getElementById('facility-page');
+    const blankPage = document.getElementById('blank-page');
+    const mainApp = document.getElementById('main-app');
+    const loginForm = document.getElementById('login-form');
+    const loginMsg = document.getElementById('login-msg');
+    const facilitySelect = document.getElementById('facility-select');
+    const drawer = document.getElementById('drawer');
+    const drawerBackdrop = document.getElementById('drawer-backdrop');
+    const menuToggle = document.getElementById('menu-toggle');
+    const menuToggleBlank = document.getElementById('menu-toggle-blank');
+    const stationScan = document.getElementById('station-scan');
+    const shipmentScan = document.getElementById('shipment-scan');
+    const scannedShipmentIdEl = document.getElementById('scanned-shipment-id');
+    const scannedShipmentSmallEl = document.getElementById('scanned-shipment-small');
+    const binScan = document.getElementById('bin-scan');
+    const sortingStatus = document.getElementById('sorting-status');
+    const bagBinScan = document.getElementById('bag-bin-scan');
+    const bagSealScan = document.getElementById('bag-seal-scan');
+    const baggingStatus = document.getElementById('bagging-status');
+    const bagInfoBox = document.getElementById('bag-info-box');
+    let bagShipmentsArray = []; // current bag shipments [{id, weight}]
+    const tabs = document.querySelectorAll('.tab');
+    const sortingPanel = document.getElementById('sorting-panel');
+    const baggingPanel = document.getElementById('bagging-panel');
+    const pageTitle = document.getElementById('page-title');
+    const facilityId = document.getElementById('facility-id');
+    const currentStationEl = document.getElementById('current-station');
+    const stationDisplayContainer = document.getElementById('station-display-container');
+    const processSelect = document.getElementById('process-select');
+    const processSelector = document.getElementById('process-selector');
+    const binList = document.querySelector('.bin-list');
+
+    // Login Handler
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username.toLowerCase().startsWith('ca.')) {
+        loginMsg.className = 'login-msg error';
+        loginMsg.textContent = 'Username must start with "ca."';
+        return;
+      }
+
+      if (username.toLowerCase() === 'ca.1234' && password === '1234') {
+        loginMsg.className = 'login-msg success';
+        loginMsg.textContent = 'Login Successful';
+        setTimeout(() => {
+          showPage('blank');
+        }, 1000);
+      } else {
+        loginMsg.className = 'login-msg error';
+        loginMsg.textContent = 'Invalid credentials';
+      }
+    });
+
+    // Facility Selection
+    facilitySelect.addEventListener('change', (e) => {
+      if (e.target.value) {
+        selectedFacility = e.target.value;
+        facilityId.textContent = 'ca.1234';
+        showAllMenuItems();
+        showPage('main');
+        // hide the placeholder option once a real facility is selected
+        const ph = facilitySelect.querySelector('option[value=""]');
+        if (ph) ph.style.display = 'none';
+      } else {
+        // Placeholder selected: hide other menu items
+        selectedFacility = '';
+        hideMenuItems();
+        // ensure placeholder is visible again if user returns to placeholder
+        const ph2 = facilitySelect.querySelector('option[value=""]');
+        if (ph2) ph2.style.display = '';
+      }
+    });
+
+    // Function to show all menu items
+    function showAllMenuItems() {
+      document.querySelectorAll('.hidden-menu-item').forEach(item => {
+        item.classList.remove('hidden');
+      });
+    }
+
+    // Function to hide menu items (except Tracking)
+    function hideMenuItems() {
+      document.querySelectorAll('.hidden-menu-item').forEach(item => {
+        item.classList.add('hidden');
+      });
+    }
+
+    // Facility Selection from Drawer
+    document.getElementById('facility-drawer-select').addEventListener('change', (e) => {
+      if (e.target.value && e.target.value !== 'Please Select Facility') {
+        selectedFacility = e.target.value;
+        document.getElementById('blank-facility-id').textContent = 'ca.1234';
+        facilityId.textContent = 'ca.1234';
+        showAllMenuItems(); // Show all menu items after facility selection
+        // Keep drawer open after facility selection
+        // hide the placeholder option in drawer select
+        const drawerSel = document.getElementById('facility-drawer-select');
+        if (drawerSel && drawerSel.options && drawerSel.options.length) {
+          const opt = drawerSel.options[0];
+          if (opt && opt.text && opt.text.includes('Please Select')) opt.style.display = 'none';
+        }
+      } else {
+          // Placeholder selected in drawer: hide other menu items
+          selectedFacility = '';
+          document.getElementById('blank-facility-id').textContent = '';
+          hideMenuItems();
+          // show placeholder again
+          const drawerSel2 = document.getElementById('facility-drawer-select');
+          if (drawerSel2 && drawerSel2.options && drawerSel2.options.length) {
+            const opt2 = drawerSel2.options[0];
+            if (opt2 && opt2.text && opt2.text.includes('Please Select')) opt2.style.display = '';
+          }
+        }
+    });
+
+    // Drawer Toggle
+    menuToggle.addEventListener('click', () => {
+      drawer.classList.add('open');
+      drawerBackdrop.classList.add('show');
+    });
+
+    menuToggleBlank.addEventListener('click', () => {
+      drawer.classList.add('open');
+      drawerBackdrop.classList.add('show');
+    });
+
+    drawerBackdrop.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      drawerBackdrop.classList.remove('show');
+    });
+
+    // Process Selection Handler
+    processSelect.addEventListener('change', (e) => {
+      const selectedProcess = e.target.value;
+      if (selectedProcess === 'primary' || selectedProcess === 'secondary') {
+        currentProcess = selectedProcess;
+        // Hide process selector after selection
+        processSelector.style.display = 'none';
+        // Show and activate Scan Station input
+        stationScan.classList.remove('hidden');
+        stationScan.focus();
+        // Hide shipment and bin inputs initially
+        shipmentScan.classList.add('hidden');
+        binScan.classList.add('hidden');
+        sortingStatus.classList.add('hidden');
+        stationDisplayContainer.classList.add('hidden');
+        binList.classList.add('hidden');
+        stationScanned = false;
+        shipmentCount = 0;
+        // hide previously shown scanned shipment id
+        if (scannedShipmentIdEl) {
+          scannedShipmentIdEl.classList.add('hidden');
+          scannedShipmentIdEl.innerHTML = '';
+        }
+      }
+    });
+
+    // Drawer Menu Items
+    document.querySelectorAll('.drawer-menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const action = item.dataset.action;
+        if (action === 'sorting-bagging') {
+          showPage('main');
+          // Reset process selector and show it
+          processSelect.value = '';
+          processSelector.style.display = 'block';
+          stationScan.classList.add('hidden');
+          shipmentScan.classList.add('hidden');
+          binScan.classList.add('hidden');
+          stationDisplayContainer.classList.add('hidden');
+          sortingStatus.classList.add('hidden');
+          if (scannedShipmentIdEl) {
+            scannedShipmentIdEl.classList.add('hidden');
+            scannedShipmentIdEl.innerHTML = '';
+          }
+        }
+        drawer.classList.remove('open');
+        drawerBackdrop.classList.remove('show');
+      });
+    });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      showPage('login');
+      drawer.classList.remove('open');
+      drawerBackdrop.classList.remove('show');
+      // Reset form
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      loginMsg.className = 'login-msg';
+      loginMsg.textContent = '';
+      // Reset menu visibility - hide all except Tracking
+      hideMenuItems();
+      // Reset facility selection
+      document.getElementById('facility-drawer-select').value = 'Please Select Facility';
+      selectedFacility = '';
+      // keep header facility id fixed
+      facilityId.textContent = 'ca.1234';
+    });
+
+    // Tab Switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const tabName = tab.dataset.tab;
+        
+        if (tabName === 'sorting') {
+          sortingPanel.classList.remove('hidden');
+          baggingPanel.classList.add('hidden');
+          pageTitle.textContent = 'Sorting';
+          // Reset bagging inputs
+          bagBinScan.value = '';
+          bagSealScan.value = '';
+          bagSealScan.classList.add('hidden');
+          bagBinScan.classList.remove('hidden');
+          baggingStatus.classList.add('hidden');
+          // hide bag info until a bin/station is scanned
+          if (bagInfoBox) bagInfoBox.classList.add('hidden');
+          // Reset process selector
+          processSelect.value = '';
+          processSelector.style.display = 'block';
+          stationScan.classList.add('hidden');
+          stationDisplayContainer.classList.add('hidden');
+          shipmentScan.classList.add('hidden');
+          binScan.classList.add('hidden');
+          sortingStatus.classList.add('hidden');
+          stationScanned = false;
+          if (scannedShipmentIdEl) {
+            scannedShipmentIdEl.classList.add('hidden');
+            scannedShipmentIdEl.innerHTML = '';
+          }
+        } else {
+          sortingPanel.classList.add('hidden');
+          baggingPanel.classList.remove('hidden');
+          pageTitle.textContent = 'Bagging';
+          // Reset sorting inputs
+          processSelect.value = '';
+          processSelector.style.display = 'block';
+          stationScan.classList.add('hidden');
+          stationDisplayContainer.classList.add('hidden');
+          shipmentScan.classList.add('hidden');
+          binScan.classList.add('hidden');
+          sortingStatus.classList.add('hidden');
+          stationScanned = false;
+          if (scannedShipmentIdEl) {
+            scannedShipmentIdEl.classList.add('hidden');
+              scannedShipmentIdEl.innerHTML = '';
+          }
+          if (bagInfoBox) bagInfoBox.classList.add('hidden');
+        }
+      });
+    });
+
+    // Station Scan
+    stationScan.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' && stationScan.value.trim()) {
+        const raw = stationScan.value.trim();
+
+        // If process is selected, format as "Primary N" or "Secondary N" when numeric
+        if (currentProcess === 'primary') {
+          const match = raw.match(/\d+/);
+          const num = match ? match[0] : raw;
+          currentStation = `Primary ${num}`;
+        } else if (currentProcess === 'secondary') {
+          const match = raw.match(/\d+/);
+          const num = match ? match[0] : raw;
+          currentStation = `Secondary ${num}`;
+        } else {
+          // fallback: use raw value and attempt to infer process
+          currentStation = raw || 'PrimaryCBS1';
+          if (!currentProcess || currentProcess === '') {
+            if (currentStation.includes('Primary') || currentStation.includes('CBS')) {
+              currentProcess = 'primary';
+            } else if (currentStation.includes('Secondary') || currentStation.includes('ZA')) {
+              currentProcess = 'secondary';
+            }
+          }
+        }
+
+        currentStationEl.textContent = currentStation;
+        stationScanned = true;
+        stationScan.classList.add('hidden');
+        stationDisplayContainer.classList.remove('hidden');
+        shipmentScan.classList.remove('hidden');
+        shipmentScan.focus();
+        // reset per-station shipment counter when a new station is scanned
+        shipmentCount = 0;
+        // clear any previously shown scanned shipment id when scanning new station
+        if (scannedShipmentIdEl) {
+          scannedShipmentIdEl.classList.add('hidden');
+          scannedShipmentIdEl.innerHTML = '';
+        }
+      }
+    });
+
+    // Change Station
+    document.getElementById('change-station').addEventListener('click', (e) => {
+      e.preventDefault();
+      // Show process selector dropdown
+      processSelector.style.display = 'block';
+      processSelect.value = '';
+      // Clear and hide all scan inputs and displayed status
+      stationScan.classList.add('hidden');
+      stationScan.value = '';
+      stationDisplayContainer.classList.add('hidden');
+      currentStationEl.textContent = '';
+
+      shipmentScan.classList.add('hidden');
+      shipmentScan.value = '';
+      binScan.classList.add('hidden');
+      binScan.value = '';
+
+      if (binList) binList.classList.add('hidden');
+
+      // Clear and hide sorting status
+      sortingStatus.classList.add('hidden');
+      sortingStatus.className = 'status-box hidden';
+      sortingStatus.innerHTML = '';
+
+      stationScanned = false;
+      // Reset process
+      currentProcess = '';
+      shipmentCount = 0;
+      if (scannedShipmentIdEl) {
+        scannedShipmentIdEl.classList.add('hidden');
+          scannedShipmentIdEl.innerHTML = '';
+      }
+    });
+
+    // Shipment Scan - Primary & Secondary Processes
+    shipmentScan.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' && shipmentScan.value) {
+        const rawVal = shipmentScan.value.trim();
+        const token = rawVal.toUpperCase();
+        // clear the input immediately; we'll show/hide the small text depending on branches below
+        shipmentScan.value = '';
+
+        // If there's an active mapping error:
+        // - if the scanned id matches the errored shipment, clear the error and continue
+        // - if it doesn't match, block processing and prompt to re-scan the errored id
+        if (lastMappingErrorShipment) {
+          if (rawVal === lastMappingErrorShipment) {
+            // Clear the mapping error silently and DO NOT show station/BIN or any info text.
+            sortingStatus.classList.add('hidden');
+            sortingStatus.className = 'status-box hidden';
+            sortingStatus.innerHTML = '';
+            lastMappingErrorShipment = null;
+            shipmentCount = 0;
+            // Also hide any displayed scanned shipment id
+            if (scannedShipmentIdEl) {
+              scannedShipmentIdEl.classList.add('hidden');
+              scannedShipmentIdEl.innerHTML = '';
+            }
+            shipmentScan.focus();
+            return;
+          } else {
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box error';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✕</div>
+              <div>
+                <div class="status-text">Mapping not Found Error</div>
+                <div class="status-details">Rescan ${lastMappingErrorShipment} to clear the error</div>
+              </div>
+            `;
+            shipmentScan.focus();
+            return;
+          }
+        }
+
+        // If user rescans the same shipment that's currently displayed, clear the small text
+        if (scannedShipmentIdEl) {
+          const displayed = scannedShipmentIdEl.textContent ? scannedShipmentIdEl.textContent.trim() : '';
+          if (displayed && displayed.startsWith('Shipment ID:')) {
+            const displayedId = displayed.slice('Shipment ID:'.length).trim();
+            if (displayedId && rawVal === displayedId) {
+              scannedShipmentIdEl.classList.add('hidden');
+              scannedShipmentIdEl.innerHTML = '';
+              shipmentScan.focus();
+              return;
+            }
+          }
+        }
+
+        // Increase shipment count for current station — used to trigger mapping error on every 3rd shipment
+        shipmentCount += 1;
+
+        // If token explicitly requests mapping error OR it's the 3rd shipment, show mapping error
+        const mappingTriggered = token.includes('MAP_NOT_FOUND') || token.includes('MAPPING_NOT_FOUND') || shipmentCount === 3;
+
+        if (currentProcess === 'primary') {
+          if (mappingTriggered) {
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box error';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✕</div>
+              <div>
+                <div class="status-text">Mapping not Found Error</div>
+                <div class="status-details">No mapping found for scanned shipment</div>
+              </div>
+            `;
+            // remember the shipment so rescanning it clears the error
+            lastMappingErrorShipment = rawVal;
+            // show scanned shipment id for the errored shipment so user knows which to rescan
+            if (scannedShipmentIdEl) {
+              scannedShipmentIdEl.innerHTML = `<div class="scanned-small" id="scanned-shipment-small">Shipment ID: ${rawVal}</div>`;
+              scannedShipmentIdEl.classList.remove('hidden');
+            }
+            // reset count after showing mapping error
+            shipmentCount = 0;
+            shipmentScan.focus();
+          } else {
+            const stationNo = Math.floor(Math.random() * 24) + 1;
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box success';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✓</div>
+              <div>
+                <div class="status-text">Station No ${stationNo}</div>
+              </div>
+            `;
+            // show scanned shipment id for successful scan
+            if (scannedShipmentIdEl) {
+              scannedShipmentIdEl.innerHTML = `<div class="scanned-small" id="scanned-shipment-small">Shipment ID: ${rawVal}</div>`;
+              scannedShipmentIdEl.classList.remove('hidden');
+            }
+            shipmentScan.focus();
+          }
+        } else {
+          // Secondary process
+          if (mappingTriggered) {
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box error';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✕</div>
+              <div>
+                <div class="status-text">Mapping not Found Error</div>
+                <div class="status-details">No mapping found for scanned shipment</div>
+              </div>
+            `;
+            // remember the shipment so rescanning it clears the error
+            lastMappingErrorShipment = rawVal;
+            // show scanned shipment id for the errored shipment so user knows which to rescan
+            if (scannedShipmentIdEl) {
+              scannedShipmentIdEl.innerHTML = `<div class="scanned-small" id="scanned-shipment-small">Shipment ID: ${rawVal}</div>`;
+              scannedShipmentIdEl.classList.remove('hidden');
+            }
+            // reset count after showing mapping error
+            shipmentCount = 0;
+            shipmentScan.focus();
+          } else {
+            const binNo = Math.floor(Math.random() * 36) + 1;
+            expectedBin = binNo;
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box success';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✓</div>
+              <div>
+                <div class="status-text">BIN NO ${binNo}</div>
+                <div class="status-details">Shipment Add Successfully in Bin</div>
+              </div>
+            `;
+            // show scanned shipment id for successful scan
+            if (scannedShipmentIdEl) {
+              scannedShipmentIdEl.innerHTML = `<div class="scanned-small" id="scanned-shipment-small">Shipment ID: ${rawVal}</div>`;
+              scannedShipmentIdEl.classList.remove('hidden');
+            }
+            shipmentScan.classList.add('hidden');
+            binScan.classList.remove('hidden');
+            binScan.focus();
+          }
+        }
+      }
+    });
+
+    
+
+    // Bin Scan - Secondary Process
+    binScan.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' && binScan.value) {
+        const scanned = binScan.value.trim();
+        if (expectedBin !== null) {
+          // scanned value differs from expected
+          if (String(scanned) !== String(expectedBin)) {
+            // If user scans the same wrong bin again, clear the error and go back to shipment scan
+            if (lastWrongBin !== null && String(scanned) === String(lastWrongBin)) {
+              sortingStatus.classList.add('hidden');
+              sortingStatus.className = 'status-box hidden';
+              sortingStatus.innerHTML = '';
+              binScan.value = '';
+              binScan.classList.add('hidden');
+              shipmentScan.classList.remove('hidden');
+              shipmentScan.value = '';
+              shipmentScan.focus();
+              expectedBin = null;
+              lastWrongBin = null;
+              // Also clear any displayed scanned shipment id when error is cleared by rescanning wrong bin
+              if (scannedShipmentIdEl) {
+                scannedShipmentIdEl.classList.add('hidden');
+                scannedShipmentIdEl.innerHTML = '';
+              }
+              return;
+            }
+
+
+            // First wrong scan: show error and remember the scanned wrong bin
+            sortingStatus.classList.remove('hidden');
+            sortingStatus.className = 'status-box error';
+            sortingStatus.innerHTML = `
+              <div class="status-check">✕</div>
+              <div>
+                <div class="status-text">Scanned Wrong Bin</div>
+                <div class="status-details">Expected BIN NO ${expectedBin}</div>
+              </div>
+            `;
+            lastWrongBin = scanned;
+            binScan.value = '';
+            binScan.focus();
+            return;
+          }
+
+          // scanned === expectedBin
+          // If an error was active (lastWrongBin set), DO NOT clear it when correct bin is scanned
+          if (lastWrongBin !== null) {
+            // keep the error; let user re-scan the wrong bin to clear
+            binScan.value = '';
+            binScan.focus();
+            return;
+          }
+        }
+
+        // correct bin (or no expectation and no active error) — proceed
+        sortingStatus.classList.add('hidden');
+        sortingStatus.className = 'status-box hidden';
+        sortingStatus.innerHTML = '';
+        binScan.value = '';
+        binScan.classList.add('hidden');
+        shipmentScan.classList.remove('hidden');
+        shipmentScan.focus();
+        expectedBin = null;
+        lastWrongBin = null;
+        // clear scanned shipment display after successful bin assignment
+        if (scannedShipmentIdEl) {
+          scannedShipmentIdEl.classList.add('hidden');
+          scannedShipmentIdEl.innerHTML = '';
+        }
+      }
+    });
+
+    // Bagging - Bin Scan
+    bagBinScan.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' && bagBinScan.value) {
+        // show bag info when a station/bin is scanned
+        if (bagInfoBox) bagInfoBox.classList.remove('hidden');
+
+        // Update bag stats dynamically (example/demo values)
+        const shipmentsEl = document.getElementById('bag-shipments');
+        const weightEl = document.getElementById('bag-weight');
+        // Example logic: derive demo values from scanned text when possible, else random
+        let shipments = 1;
+        let weight = 0;
+        const raw = bagBinScan.value.trim();
+        const numMatch = raw.match(/\d+/);
+        if (numMatch) {
+          // deterministic-ish values from scanned number for demo
+          const n = parseInt(numMatch[0], 10);
+          shipments = (n % 20) + 1;
+          weight = Math.round(((n % 50) + 5) * 10) / 10; // 5.0 - 54.9
+        } else {
+          shipments = Math.floor(Math.random() * 20) + 1;
+          weight = Math.round((Math.random() * 55 + 5) * 10) / 10;
+        }
+
+        if (shipmentsEl) shipmentsEl.textContent = String(shipments);
+        if (weightEl) {
+          weightEl.textContent = `${weight} Kg`;
+          // color class: green when <= 30, red otherwise
+          weightEl.classList.remove('weight-ok', 'weight-high');
+          if (weight <= 30) weightEl.classList.add('weight-ok');
+          else weightEl.classList.add('weight-high');
+        }
+
+        // Build demo shipments array with individual weights that sum to total weight
+        bagShipmentsArray = [];
+        if (shipments > 0) {
+          const avg = weight / shipments;
+          // assign avg rounded to 1 decimal, adjust last to match total
+          let sum = 0;
+          for (let i = 0; i < shipments; i++) {
+            const w = Math.round(avg * 10) / 10;
+            bagShipmentsArray.push({ id: `SHP-${Date.now().toString().slice(-5)}-${i+1}`, weight: w });
+            sum += w;
+          }
+          // adjust difference on last element
+          const diff = Math.round((weight - sum) * 10) / 10;
+          if (bagShipmentsArray.length) bagShipmentsArray[bagShipmentsArray.length-1].weight = Math.round((bagShipmentsArray[bagShipmentsArray.length-1].weight + diff) * 10) / 10;
+        }
+
+        // ensure shipments list UI is cleared
+        const shipmentsListEl = document.getElementById('bag-shipments-list');
+        if (shipmentsListEl) shipmentsListEl.innerHTML = '';
+
+        bagBinScan.classList.add('hidden');
+        bagSealScan.classList.remove('hidden');
+        bagSealScan.focus();
+      }
+    });
+
+    // Render shipments list for removal
+    function renderBagShipmentsList() {
+      const listEl = document.getElementById('bag-shipments-list');
+      const shipmentsEl = document.getElementById('bag-shipments');
+      const weightEl = document.getElementById('bag-weight');
+      if (!listEl) return;
+      if (!bagShipmentsArray || bagShipmentsArray.length === 0) {
+        listEl.innerHTML = '<div style="padding:8px;color:#666">No shipments</div>';
+        return;
+      }
+      listEl.innerHTML = '';
+        bagShipmentsArray.forEach(s => {
+        const row = document.createElement('div');
+        row.className = 'shipment-item';
+        row.innerHTML = `<div>${s.id} — ${s.weight} Kg</div><button class="delete-btn" data-id="${s.id}" aria-label="Delete shipment">` +
+          `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path d="M3 6h18v2H3V6zm2 3h14l-1 11H6L5 9zm3-6h6l1 2H7l1-2z" />
+            </svg>
+          ` +
+        `</button>`;
+        listEl.appendChild(row);
+      });
+      // add done button
+      const done = document.createElement('button');
+      done.className = 'done-btn';
+      done.textContent = 'Done';
+      done.addEventListener('click', () => {
+        listEl.classList.add('hidden');
+      });
+      listEl.appendChild(done);
+
+      // attach delete handlers (use closure on button to avoid svg target issues)
+      listEl.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          // prevent removing last shipment
+          if (!bagShipmentsArray || bagShipmentsArray.length <= 1) {
+            // show inline error
+            let err = listEl.querySelector('.remove-error');
+            if (!err) {
+              err = document.createElement('div');
+              err.className = 'remove-error';
+              err.textContent = 'At least one shipment must remain in the bag.';
+              listEl.insertBefore(err, listEl.firstChild);
+            }
+            setTimeout(() => { if (err) err.remove(); }, 2200);
+            return;
+          }
+
+          const id = btn.dataset.id;
+          if (!id) return;
+          // remove from array
+          bagShipmentsArray = bagShipmentsArray.filter(x => x.id !== id);
+          // recalc totals
+          const total = bagShipmentsArray.reduce((acc, cur) => acc + Number(cur.weight), 0);
+          if (shipmentsEl) shipmentsEl.textContent = String(bagShipmentsArray.length);
+          if (weightEl) {
+            const val = Math.round(total * 10) / 10;
+            weightEl.textContent = `${val} Kg`;
+            weightEl.classList.remove('weight-ok', 'weight-high');
+            if (val <= 30) weightEl.classList.add('weight-ok'); else weightEl.classList.add('weight-high');
+          }
+          // re-render list
+          renderBagShipmentsList();
+        });
+      });
+      listEl.classList.remove('hidden');
+    }
+
+    // Remove Shipments link click
+    const removeLink = document.querySelector('.remove-link');
+    if (removeLink) {
+      removeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        // show shipments list under bag info (generate if empty)
+        renderBagShipmentsList();
+      });
+    }
+
+    // Bagging - Seal Scan
+    bagSealScan.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' && bagSealScan.value) {
+        // show completion message
+        baggingStatus.classList.remove('hidden');
+        baggingStatus.className = 'status-box success';
+        baggingStatus.innerHTML = `
+          <div class="status-check">✓</div>
+          <div>
+            <div class="status-text">Bagging Completed</div>
+          </div>
+        `;
+
+        // Reset inputs and UI: hide bag info and show only bag-bin-scan
+        bagBinScan.value = '';
+        bagSealScan.value = '';
+        bagSealScan.classList.add('hidden');
+        if (bagInfoBox) bagInfoBox.classList.add('hidden');
+        bagBinScan.classList.remove('hidden');
+
+        setTimeout(() => {
+          baggingStatus.classList.add('hidden');
+          bagBinScan.focus();
+        }, 3000);
+      }
+    });
+
+    // Page Navigation
+    function showPage(page) {
+      loginPage.classList.add('hidden');
+      facilityPage.classList.add('hidden');
+      blankPage.classList.add('hidden');
+      mainApp.classList.add('hidden');
+      
+      if (page === 'login') {
+        loginPage.classList.remove('hidden');
+      } else if (page === 'facility') {
+        facilityPage.classList.remove('hidden');
+      } else if (page === 'blank') {
+        blankPage.classList.remove('hidden');
+      } else if (page === 'main') {
+        mainApp.classList.remove('hidden');
+      }
+    }
+
+    // Initialize: Hide menu items except Tracking on page load
+    hideMenuItems();
+  </script>
+</body>
+</html>
